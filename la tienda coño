@@ -1,0 +1,122 @@
+import pygame
+
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class CircularLinkedList:
+    def __init__(self):
+        self.head = None
+
+    def append(self, data):
+        new_node = Node(data)
+        if not self.head:
+            self.head = new_node
+            self.head.next = self.head
+        else:
+            temp = self.head
+            while temp.next != self.head:
+                temp = temp.next
+            temp.next = new_node
+            new_node.next = self.head
+
+    def get_data_at_position(self, position):
+        if not self.head:
+            return None
+        
+        current = self.head
+        count = 0
+        while count < position:
+            current = current.next
+            count += 1
+        return current.data
+
+# Crear una lista circular con 5 elementos
+cll = CircularLinkedList()
+elements = [10, 20, 30]  # Los datos que se agregarán a la lista
+
+for elem in elements:
+    cll.append(elem)
+
+# Inicializar Pygame
+pygame.init()
+
+# Inicializar la posición
+monedas_jugador=1000
+items_jugador={
+    "escudoS" : 0,
+    "perrito" : 0,
+    "casa" : 0
+    }
+position = 0
+# Configurar la ventana del juego
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Mostrar/Ocultar Imagen")
+
+# Colores
+WHITE = (255, 255, 255)
+
+# Cargar las imágenes
+image_paths = ["C:\\Users\\Ana Tornez\\Downloads\\imagenuno.png", "C:\\Users\\Ana Tornez\\Downloads\\image2.png", "C:\\Users\\Ana Tornez\\Downloads\\image1.png"]
+images = [pygame.image.load(path).convert_alpha() for path in image_paths]
+image_rects = [image.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)) for image in images]
+
+# Variables del juego
+current_image_index = 0
+total_images = len(images)
+
+# Bucle principal del juego
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+          
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:  # Presiona 'SPACE' para cambiar la imagen
+                current_image_index = (current_image_index + 1) % total_images
+                position_input = 1                  
+                position_change = int(position_input)
+                position += position_change
+                data = cll.get_data_at_position(position)
+                print(f"El dato en la posición actual ({position}) es: {data}")
+                #recorrer la lista 
+            if event.key == pygame.K_d:  
+                #agregar el valor comprado
+                if data == 10:
+                    monedas_jugador= monedas_jugador-10
+                    print(monedas_jugador)
+                    items_jugador["casa"]=items_jugador["casa"]+1
+                    print(items_jugador)
+                    print("objeto e comprado")
+                    break
+                if data == 20:
+                    monedas_jugador= monedas_jugador-20
+                    print(monedas_jugador)
+                    items_jugador["escudoS"]=items_jugador["escudoS"]+1
+                    print(items_jugador) 
+                    print("objeto p comprado")
+
+                    break
+                if data == 30:
+                    monedas_jugador= monedas_jugador-20
+                    print(monedas_jugador)
+                    items_jugador["perrito"]=items_jugador["perrito"]+1
+                    print(items_jugador)
+                    print("objeto c comprado")
+                    break
+
+    # Dibujar en la pantalla
+    screen.fill(WHITE)  # Fondo blanco
+
+    # Mostrar la imagen actual
+    screen.blit(images[current_image_index], image_rects[current_image_index])
+
+    # Actualizar la pantalla
+    pygame.display.flip()
+
+# Salir de Pygame
+pygame.quit()
